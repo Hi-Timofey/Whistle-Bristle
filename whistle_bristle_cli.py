@@ -101,7 +101,6 @@ def bristle_working(args):
     # TODO: Not correct selecting path for database
     path = '/home/katok/combat/python_workspace/whistle_bristle/whistle_bristle/db/files.db'
     db = files.FilesDB(path)
-    db.start()
 
     if args.delete:
         db.delete_files(args.delete)
@@ -114,8 +113,6 @@ def bristle_working(args):
 
     if args.filespriority:
         db.add_files_with_priority(args.filespriority)
-
-    db.stop()
 
 
 if __name__ == '__main__':
