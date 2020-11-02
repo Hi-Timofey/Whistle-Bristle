@@ -1,20 +1,44 @@
 import argparse
 import os
-from utils.key_combination import check_key
-from main import emergency_erase
+import sys
+import whistle_bristle
+from whistle_bristle import emergency_erase
+from whistle_bristle.utils.key_combination import check_key
+from whistle_bristle.db import files
 
 
 def check_path(string):
     '''
     Check if the string path is file of directory
     '''
-    # Checking with argparse.FileType() ?
+
     if os.path.isdir(string) or os.path.isfile(string):
+        string = os.path.abspath(string)
         if string[-1] != '/' and os.path.isdir(string):
             string += '/'
         return string
     else:
         raise ValueError(string + ' is not a directory or regular file.')
+
+
+def check_path_and_priority(string):
+    '''
+    Check if the string path is file of directory
+    '''
+
+    try:
+        path, priority = string.split('@')
+    except ValueError:
+        raise ValueError(
+            f'"{string}" has incorrect syntax ( example: "file.txt@4" )')
+
+    if os.path.isdir(path) or os.path.isfile(path):
+        path = os.path.abspath(path)
+        if path[-1] != '/' and os.path.isdir(path):
+            path += '/'
+        return (path, int(priority),)
+    else:
+        raise ValueError(path + ' is not a directory or regular file.')
 
 
 def create_parser():
@@ -23,31 +47,78 @@ def create_parser():
     desc = ''
     keycombo_help = "Key combination to start erase ( surround with '' )"
     files_help = 'Files and dirs you want to be deleted after pressing hotkey'
+    files_priority_help = 'Files and dirs you want to be deleted after pressing hotkey with priority of deleting ( syntax: "path_to_file_or_dir@priority_number" )'
+    files_delete_help = 'Deletes files from database'
+    changing_priority_help = 'Changing priority of deleting files'
 
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('files',
-                        nargs='+',
-                        type=check_path,
-                        help=files_help
-                        )
+    subparsers = parser.add_subparsers(dest='cmd_type')
 
-    parser.add_argument('-k', "--key", '--keycombo',
-                        type=check_key,
-                        default='<ctrl>+<alt>+e',
-                        help=keycombo_help
-                        )
+    bristle_parser = subparsers.add_parser('bristle')
+    bristle_actions = bristle_parser.add_mutually_exclusive_group()
+
+    # whistle_parser = subparsers.add_parser('whistle')
+
+    bristle_actions.add_argument('-fo', '--filesonly',
+                                 nargs='+',
+                                 type=check_path,
+                                 default=False,
+                                 help=files_help
+                                 )
+
+    bristle_actions.add_argument('-fp', '--filespriority',
+                                 nargs='+',
+                                 type=check_path_and_priority,
+                                 default=False,
+                                 help=files_priority_help
+                                 )
+    bristle_actions.add_argument('-d', '--delete',
+                                 nargs='+',
+                                 type=check_path,
+                                 default=False,
+                                 help=files_delete_help
+                                 )
+    bristle_actions.add_argument('-cp', '--changepriority',
+                                 nargs='+',
+                                 type=check_path_and_priority,
+                                 default=False,
+                                 help=changing_priority_help
+                                 )
+
+    # whistle_parser.add_argument('-k', "--key", '--keycombo',
+    #                     type=check_key,
+    #                     default='<ctrl>+<alt>+e',
+    #                     help=keycombo_help
+    #                     )
     return parser
 
 
-def create_emergency_eraser(files, key):
-    # print(f'Files: {files} | Key: {key}')
-    ee = emergency_erase.EmergencyErase()
-
+def whistle_working(args):
     pass
+
+
+def bristle_working(args):
+    db = files.Files()
+    if args.delete:
+        print('deleting!')
+
+    if args.changepriority:
+        print('changing priority!')
+
+    if args.filesonly:
+        print('files only adding!')
+
+    if args.filespriority:
+        print('files with priority adding!')
+    else:
+        raise ValueError("Something went wrong")
 
 
 if __name__ == '__main__':
     parser = create_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(sys.argv[1:])
 
-    create_emergency_eraser(args.files, args.key)
+    if args.cmd_type == 'bristle':
+        bristle_working(args)
+    elif args.cmd_type == 'whistle':
+        whistle_working(args)

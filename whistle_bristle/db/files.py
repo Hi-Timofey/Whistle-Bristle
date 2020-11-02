@@ -29,7 +29,8 @@ class FilesDB():
 
 
 if __name__ == '__main__':
-    db = FilesDB()
+    path = '/home/katok/combat/python_workspace/whistle_bristle/whistle_bristle/db/'
+    db = FilesDB(path + 'files.db')
     db.start()
     print(*db.get_all_data())
     db.stop()
