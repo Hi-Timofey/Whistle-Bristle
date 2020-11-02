@@ -91,4 +91,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+TODO.txt
 
+.criterii.txt
+.logical_bomb.py
+.panic_button.py
+.testing_key_combination.py
