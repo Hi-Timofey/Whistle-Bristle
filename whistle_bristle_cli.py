@@ -4,43 +4,8 @@ import sys
 import whistle_bristle
 from whistle_bristle import emergency_erase
 from whistle_bristle.utils.key_combination import check_key
+from whistle_bristle.utils.checkers import check_path, check_path_and_priority
 from whistle_bristle.db import files
-
-
-def check_path(string):
-    '''
-    Check if the string path is file of directory
-    '''
-    # TODO: Move to utils
-
-    if os.path.isdir(string) or os.path.isfile(string):
-        string = os.path.abspath(string)
-        if string[-1] != '/' and os.path.isdir(string):
-            string += '/'
-        return string
-    else:
-        raise ValueError(string + ' is not a directory or regular file.')
-
-
-def check_path_and_priority(string):
-    '''
-    Check if the string path is file of directory
-    '''
-    # TODO: Move to utils
-
-    try:
-        path, priority = string.split('@')
-    except ValueError:
-        raise ValueError(
-            f'"{string}" has incorrect syntax ( example: "file.txt@4" )')
-
-    if os.path.isdir(path) or os.path.isfile(path):
-        path = os.path.abspath(path)
-        if path[-1] != '/' and os.path.isdir(path):
-            path += '/'
-        return (path, int(priority),)
-    else:
-        raise ValueError(path + ' is not a directory or regular file.')
 
 
 def create_parser():
@@ -69,12 +34,12 @@ def create_parser():
                                  )
 
     bristle_actions.add_argument('-da', '--deleteall',
-                                action='store_true',
-                                default=False)
+                                 action='store_true',
+                                 default=False)
 
     bristle_actions.add_argument('-l', '--listfiles',
-                                action='store_true',
-                                default=False)
+                                 action='store_true',
+                                 default=False)
 
     bristle_actions.add_argument('-fp', '--filespriority',
                                  nargs='+',
@@ -139,6 +104,8 @@ def bristle_working(args):
 
 
 if __name__ == '__main__':
+    # PATH TO THE PROJECT
+    # print(os.path.abspath(sys.argv[0]))
     parser = create_parser()
     args = parser.parse_args(sys.argv[1:])
 
