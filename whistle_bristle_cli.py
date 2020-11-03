@@ -11,6 +11,7 @@ def check_path(string):
     '''
     Check if the string path is file of directory
     '''
+    # TODO: Move to utils
 
     if os.path.isdir(string) or os.path.isfile(string):
         string = os.path.abspath(string)
@@ -25,6 +26,7 @@ def check_path_and_priority(string):
     '''
     Check if the string path is file of directory
     '''
+    # TODO: Move to utils
 
     try:
         path, priority = string.split('@')
@@ -65,6 +67,14 @@ def create_parser():
                                  default=False,
                                  help=files_help
                                  )
+
+    bristle_actions.add_argument('-da', '--deleteall',
+                                action='store_true',
+                                default=False)
+
+    bristle_actions.add_argument('-l', '--listfiles',
+                                action='store_true',
+                                default=False)
 
     bristle_actions.add_argument('-fp', '--filespriority',
                                  nargs='+',
@@ -113,6 +123,19 @@ def bristle_working(args):
 
     if args.filespriority:
         db.add_files_with_priority(args.filespriority)
+
+    if args.deleteall:
+        db.delete_all_files()
+
+    if args.listfiles:
+        data = db.get_all_data()
+        if len(data) >= 1:
+
+            for d in data:
+                path, p = d
+                print(f'| Priority: {p} * Path to file: {path} \t')
+        else:
+            print('There are no files in database to erase!')
 
 
 if __name__ == '__main__':

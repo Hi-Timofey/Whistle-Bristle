@@ -97,4 +97,4 @@ TODO.txt
 .logical_bomb.py
 .panic_button.py
 .testing_key_combination.py
-*Db.*
+whistle_bristle/db/files.db

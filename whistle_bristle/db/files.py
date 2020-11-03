@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sqlite3 as sql
 
-DEFAULT_PATH = 'whistle_bristle/whistle_bristle/db/'
+DEFAULT_PATH = 'whistle_bristle/whistle_bristle/db/files.db'
 
 
 class FilesDB():
@@ -69,6 +69,17 @@ class FilesDB():
 
         self._stop()
 
+    def delete_all_files(self):
+        self._start()
+
+        query = f"delete from files"
+        self.cur.execute(query)
+
+        # TODO: real commiting
+        self.db_connect.commit()
+
+        self._stop()
+
     def change_priority_of_file(self, files):
         self._start()
 
@@ -84,7 +95,7 @@ class FilesDB():
 
 
 if __name__ == '__main__':
-    db = FilesDB(DEFAULT_PATH + 'files.db')
+    db = FilesDB(DEFAULT_PATH)
     db.start()
     print(*db.get_all_data())
     db.stop()
