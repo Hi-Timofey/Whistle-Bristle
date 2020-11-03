@@ -5,7 +5,20 @@ import whistle_bristle
 from whistle_bristle import emergency_erase
 from whistle_bristle.utils.key_combination import check_key
 from whistle_bristle.utils.checkers import check_path, check_path_and_priority
+from whistle_bristle.utils.config_manager import ConfigManager
 from whistle_bristle.db import files
+
+# PATH TO THE PROJECT
+project_wd = os.path.dirname(os.path.abspath(sys.argv[0])) + '/'
+
+# Creates ConfigManager file
+cfg_manager = ConfigManager(project_wd)
+if cfg_manager.is_blank_cfg():
+    answer = str(input('Do you want to set default config?[Y/n]:')).strip()
+    if answer.lower() == 'y':
+        cfg_manager.set_default()
+
+input('STOP IT')
 
 
 def create_parser():
@@ -104,8 +117,7 @@ def bristle_working(args):
 
 
 if __name__ == '__main__':
-    # PATH TO THE PROJECT
-    # print(os.path.abspath(sys.argv[0]))
+
     parser = create_parser()
     args = parser.parse_args(sys.argv[1:])
 

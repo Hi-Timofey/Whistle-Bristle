@@ -1,6 +1,15 @@
 import os
 
 
+def check_cfg_file(cfgfile_path):
+    '''Check if config file exists or not'''
+
+    if os.path.isfile(cfgfile_path):
+        return True
+    else:
+        return False
+
+
 def check_path(string):
     '''
     Check if the string path is file of directory
