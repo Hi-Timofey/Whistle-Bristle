@@ -14,8 +14,9 @@ def check_path(string):
     '''
     Check if the string path is file of directory
     '''
-    # TODO: Move to utils
+   # TODO: Move to utils
 
+    string = os.path.expanduser(string)
     if os.path.isdir(string) or os.path.isfile(string):
         string = os.path.abspath(string)
         if string[-1] != '/' and os.path.isdir(string):
@@ -37,6 +38,7 @@ def check_path_and_priority(string):
         raise ValueError(
             f'"{string}" has incorrect syntax ( example: "file.txt@4" )')
 
+    path = os.path.expanduser(path)
     if os.path.isdir(path) or os.path.isfile(path):
         path = os.path.abspath(path)
         if path[-1] != '/' and os.path.isdir(path):

@@ -27,7 +27,7 @@ def create_parser():
     files_help = 'Files and dirs you want to be deleted after pressing hotkey'
     files_priority_help = 'Files and dirs you want to be deleted after pressing hotkey with priority of deleting ( syntax: "path_to_file_or_dir@priority_number" )'
     files_delete_help = 'Deletes files from database'
-    changing_priority_help = 'Changing priority of deleting files'
+    changing_priority_help = 'Changing priority of deleting files "filename@priority"'
 
     parser = argparse.ArgumentParser(description=desc)
     subparsers = parser.add_subparsers(dest='cmd_type')
@@ -92,7 +92,15 @@ def whistle_working(args):
 
 def bristle_working(args):
     path = cfg_manager.get_cfg_value(ConfigManager.DATABASE_PATH)
-    db = files.FilesDB(path)
+    try:
+        db = files.FilesDB(path)
+    except files.DBError as e:
+        print('Something wrong with your path to the database!')
+        print(f'Please check the path in your "{cfg_manager.cfgfile_name}"')
+        answer = str(input('Or do you want to create default database?[Y/n]:')).strip()
+        if answer.lower() == 'y':
+            db = files.FilesDB(path, create_if_no=True)
+
 
     if args.delete:
         db.delete_files(args.delete)

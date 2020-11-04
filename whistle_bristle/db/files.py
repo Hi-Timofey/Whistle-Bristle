@@ -1,15 +1,38 @@
 # -*- coding: utf-8 -*-
 import sqlite3 as sql
+from os.path import isfile, getsize
 
-DEFAULT_PATH = 'whistle_bristle/whistle_bristle/db/files.db'
+
+class DBError(ValueError):
+    pass
 
 
 class FilesDB():
 
-    def __init__(self, path=DEFAULT_PATH):
+    def __init__(self, path=None, create_if_no=False):
+        if path is None:
+            raise ValueError('No path to db')
+        if not FilesDB.isSQLite3(path):
+            if not create_if_no:
+                raise DBError('There are no sql database file')
         self.path = path
         self.cur = None
         self.db_connect = None
+        if create_if_no:
+            self._create()
+
+    def _create(self):
+        '''Creates the default database with "Files" table'''
+        self._start()
+        query = '''
+        CREATE TABLE "files" (
+	"path"	text NOT NULL UNIQUE,
+	"priority"	integer NOT NULL DEFAULT 4,
+	PRIMARY KEY("path"));
+        '''
+        self.cur.execute(query)
+        self.db_connect.commit()
+        self._stop()
 
     def _start(self):
         self.db_connect = sql.connect(self.path)
@@ -18,6 +41,17 @@ class FilesDB():
     def _stop(self):
         self.cur = None
         self.db_connect.close()
+
+    def isSQLite3(filename):
+        if not isfile(filename):
+            return False
+        if getsize(filename) < 100:  # SQLite database file header is 100 bytes
+            return False
+
+        with open(filename, 'rb') as fd:
+            header = fd.read(100)
+
+        return header[:16] == b'SQLite format 3\x00'
 
     def get_all_paths(self):
         self._start()
@@ -95,7 +129,8 @@ class FilesDB():
 
 
 if __name__ == '__main__':
-    db = FilesDB(DEFAULT_PATH)
-    db.start()
-    print(*db.get_all_data())
-    db.stop()
+    pass
+    # db = FilesDB()
+    # db.start()
+    # print(*db.get_all_data())
+    # db.stop()
