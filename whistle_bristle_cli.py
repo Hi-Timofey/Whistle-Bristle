@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 import whistle_bristle
-from whistle_bristle import emergency_erase
+from whistle_bristle.emergency_erase import EmergencyErase
 from whistle_bristle.utils.key_combination import check_key
 from whistle_bristle.utils.checkers import check_path, check_path_and_priority
 from whistle_bristle.utils.config_manager import ConfigManager
@@ -77,17 +77,26 @@ def create_parser():
                                 default=False,
                                 help='Show files database path')
 
-    # whistle_parser = subparsers.add_parser('whistle')
-    # whistle_parser.add_argument('-k', "--key", '--keycombo',
-    #                     type=check_key,
-    #                     default='<ctrl>+<alt>+e',
-    #                     help=keycombo_help
-    #                     )
+    whistle_parser = subparsers.add_parser('whistle')
+    whistle_parser.add_argument('-k', '--keycombo',
+                                type=check_key,
+                                default='<ctrl>+<alt>+b',
+                                help=keycombo_help
+                                )
     return parser
 
 
 def whistle_working(args):
-    pass
+    print('WE ARE IN CHARGE NOW!!!!')
+
+    path = cfg_manager.get_cfg_value(ConfigManager.DATABASE_PATH)
+
+    # TODO Make logging options
+    # TODO Rewrite this to factory pattern (because I want)
+    ee = EmergencyErase(path_to_db=path, keycombo=args.keycombo)
+    ee.start_listener()
+
+    input('shit')
 
 
 def bristle_working(args):
@@ -97,10 +106,10 @@ def bristle_working(args):
     except files.DBError as e:
         print('Something wrong with your path to the database!')
         print(f'Please check the path in your "{cfg_manager.cfgfile_name}"')
-        answer = str(input('Or do you want to create default database?[Y/n]:')).strip()
+        answer = str(
+            input('Or do you want to create default database?[Y/n]:')).strip()
         if answer.lower() == 'y':
             db = files.FilesDB(path, create_if_no=True)
-
 
     if args.delete:
         db.delete_files(args.delete)
@@ -147,5 +156,5 @@ if __name__ == '__main__':
         config_working(args)
     elif args.cmd_type == 'bristle':
         bristle_working(args)
-    # elif args.cmd_type == 'whistle':
-    #     whistle_working(args)
+    elif args.cmd_type == 'whistle':
+        whistle_working(args)
