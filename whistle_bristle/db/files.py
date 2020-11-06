@@ -56,20 +56,22 @@ class FilesDB():
     def get_all_paths(self):
         self._start()
 
-        return self.cur.execute('select distinct path from files').fetchall()
+        respone = self.cur.execute('select distinct path from files').fetchall()
 
         self.stop()
+        return respone
 
     def get_all_data(self, sorted=True):
         self._start()
 
         if sorted:
-            return self.cur.execute('''select distinct * from files
+            response =  self.cur.execute('''select distinct * from files
                                     order by priority asc''').fetchall()
         else:
-            return self.cur.execute('select distinct * from files').fetchall()
+            response = self.cur.execute('select distinct * from files').fetchall()
 
         self._stop()
+        return respone
 
     def add_files_only(self, files):
         self._start()
