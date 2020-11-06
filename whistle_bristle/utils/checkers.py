@@ -38,6 +38,8 @@ def check_path_and_priority(string):
         raise ValueError(
             f'"{string}" has incorrect syntax ( example: "file.txt@4" )')
 
+    if not 1<=int(priority)<=7:
+        raise ValueError('Incorrect priority number (must be from 1 to 7)')
     path = os.path.expanduser(path)
     if os.path.isdir(path) or os.path.isfile(path):
         path = os.path.abspath(path)
