@@ -14,12 +14,13 @@ class EmergencyErase:
                 'Please, pass hotkey for erasing')
         self.keycombo = keycombo
         self.key_listener = key_combination.KeyCombinationListener(
-            self.keycombo, lambda: print('get ready for deleting'), self.run)
+            self.keycombo, self._prepare_run, self.run)
 
     def start_listener(self):
         self.key_listener.start_listening()
 
+    def _prepare_run(self):
+        pass
+
     def run(self):
-        print('emergecny circumstantion!')
-        with open('somefile.txt', 'w') as f:
-            pass
+        pass
