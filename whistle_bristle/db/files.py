@@ -58,7 +58,7 @@ class FilesDB():
 
         respone = self.cur.execute('select distinct path from files').fetchall()
 
-        self.stop()
+        self._stop()
         return respone
 
     def get_all_data(self, sorted=True):
