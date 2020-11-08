@@ -96,8 +96,6 @@ def whistle_working(args):
     ee = EmergencyErase(path_to_db=path, keycombo=args.keycombo)
     ee.start_listener()
 
-    input('shit')
-
 
 def bristle_working(args):
     path = cfg_manager.get_cfg_value(ConfigManager.DATABASE_PATH)
