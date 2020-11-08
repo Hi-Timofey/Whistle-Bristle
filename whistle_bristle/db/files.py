@@ -56,22 +56,24 @@ class FilesDB():
     def get_all_paths(self):
         self._start()
 
-        respone = self.cur.execute('select distinct path from files').fetchall()
+        respones = self.cur.execute(
+            'select distinct path from files').fetchall()
 
         self._stop()
-        return respone
+        return respones
 
-    def get_all_data(self, sorted=True):
+    def get_all_data(self, priorities=True):
         self._start()
 
-        if sorted:
-            response =  self.cur.execute('''select distinct * from files
+        if priorities:
+            response = self.cur.execute('''select distinct * from files
                                     order by priority asc''').fetchall()
         else:
-            response = self.cur.execute('select distinct * from files').fetchall()
+            response = self.cur.execute(
+                'select distinct * from files').fetchall()
 
         self._stop()
-        return respone
+        return response
 
     def add_files_only(self, files):
         self._start()
@@ -128,6 +130,13 @@ class FilesDB():
         self.db_connect.commit()
 
         self._stop()
+
+    def is_empty(self) -> bool:
+        self._start()
+        q = 'SELECT CASE WHEN EXISTS(SELECT 1 FROM files) THEN 0 ELSE 1 END AS IsEmpty;'
+        response = self.cur.execute(q)
+        self._stop()
+        return response
 
 
 if __name__ == '__main__':
