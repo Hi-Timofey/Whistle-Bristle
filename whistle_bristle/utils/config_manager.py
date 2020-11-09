@@ -11,10 +11,13 @@ class ConfigManager():
 
     DATABASE_PATH = 'database_path'
 
-    def __init__(self, project_dir):
+    def __init__(self, project_dir, cfgfile_path=None):
         self.project_dir = project_dir
         self.cfgfile_name = 'config.txt'
-        self.cfgfile_path = self.project_dir + self.cfgfile_name
+        if cfgfile_path is None
+            self.cfgfile_path = self.project_dir + self.cfgfile_name
+        else:
+            self.cfgfile_path = cfgfile_path
         self._init_cfg_file()
 
         self.DEFAULT_CONFIG = {
