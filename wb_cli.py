@@ -5,18 +5,6 @@ import whistle_bristle
 from whistle_bristle.emergency_erase import EmergencyErase
 from whistle_bristle.utils.key_combination import check_key
 from whistle_bristle.utils.checkers import check_path, check_path_and_priority
-from whistle_bristle.utils.config_manager import ConfigManager
-from whistle_bristle.db import files
-
-# PATH TO THE PROJECT
-project_wd = os.path.dirname(os.path.abspath(sys.argv[0])) + '/'
-
-# Creates ConfigManager file
-cfg_manager = ConfigManager(project_wd)
-if cfg_manager.is_blank_cfg():
-    answer = str(input('Do you want to set default config?[Y/n]:')).strip()
-    if answer.lower() == 'y':
-        cfg_manager.set_default()
 
 
 def create_parser():
@@ -86,73 +74,59 @@ def create_parser():
     return parser
 
 
-def whistle_working(args):
-    print('WE ARE IN CHARGE NOW!!!!')
-
-    path = cfg_manager.get_cfg_value(ConfigManager.DATABASE_PATH)
-
-    # TODO Make logging options
-    # TODO Rewrite this to factory pattern (because I want)
-    ee = EmergencyErase(path_to_db=path, keycombo=args.keycombo)
-    ee.start_listener()
-
-
-def bristle_working(args):
-    path = cfg_manager.get_cfg_value(ConfigManager.DATABASE_PATH)
-    try:
-        db = files.FilesDB(path)
-    except files.DBError as e:
-        print('Something wrong with your path to the database!')
-        print(f'Please check the path in your "{cfg_manager.cfgfile_name}"')
-        answer = str(
-            input('Or do you want to create default database?[Y/n]:')).strip()
-        if answer.lower() == 'y':
-            db = files.FilesDB(path, create_if_no=True)
-
-    if args.delete:
-        db.delete_files(args.delete)
-
-    if args.changepriority:
-        db.change_priority_of_file(args.changepriority)
-
-    if args.filesonly:
-        db.add_files_only(args.filesonly)
-
-    if args.filespriority:
-        db.add_files_with_priority(args.filespriority)
-
-    if args.deleteall:
-        db.delete_all_files()
-
-    if args.listfiles:
-        data = db.get_all_data()
-        if len(data) >= 1:
-
-            for d in data:
-                path, p = d
-                print(f'| Priority: {p} * Path to file: {path} \t')
-        else:
-            print('There are no files in database to erase!')
-
-
-def config_working(args):
-    if args.pathtodb:
-        # TODO: Can also change path to database
-        path_to_db = cfg_manager.get_cfg_value(ConfigManager.DATABASE_PATH)
-        print(
-            f'Path to database: {path_to_db}')
-    if args.info:
-        cfg_manager.show_info()
-
-
 if __name__ == '__main__':
-
     parser = create_parser()
     args = parser.parse_args(sys.argv[1:])
 
+    ee = EmergencyErase()
+    if ee.is_blank_config():
+        ee.set_default_config()
+
+    # TODO if only command name print help
+
     if args.cmd_type == 'config':
-        config_working(args)
+        if args.pathtodb:
+            path_to_db = ee.get_database_path()
+            print(
+                f'Path to database: {path_to_db}')
+        if args.info:
+            print(ee.get_database_info())
+
     elif args.cmd_type == 'bristle':
-        bristle_working(args)
+        ee.load_database(create_if_no=True)
+
+        if args.delete:
+            ee.delete_files(args.delete)
+
+        if args.changepriority:
+            ee.change_priority_of_file(args.changepriority)
+
+        if args.filesonly:
+            ee.add_files_only(args.filesonly)
+
+        if args.filespriority:
+            ee.add_files_with_priority(args.filespriority)
+
+        if args.deleteall:
+            ee.delete_all_files()
+
+        if args.listfiles:
+            data = ee.get_all_data()
+            if len(data) >= 1:
+
+                for d in data:
+                    path, p = d
+                    print(f'| Priority: {p} * Path to file: {path} \t')
+            else:
+                print('There are no files in database to erase!')
     elif args.cmd_type == 'whistle':
-        whistle_working(args)
+
+        # TODO Make logging options
+        # TODO Rewrite this to factory pattern (because I want)
+
+        ee.load_database()
+
+        ee.set_priorities(True)
+        ee.set_keycombo(keycombo=args.keycombo)
+        breakpoint()
+        ee.start_listener()

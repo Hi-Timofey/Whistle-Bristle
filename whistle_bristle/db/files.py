@@ -18,19 +18,22 @@ class FilesDB():
         self.path = path
         self.cur = None
         self.db_connect = None
-        if create_if_no:
-            self._create()
+        if create_if_no and self.is_empty():
+            self.create_default()
 
-    def _create(self):
+    def get_path(self):
+        return self.path
+
+    def create_default(self):
         '''Creates the default database with "Files" table'''
         self._start()
-        query = '''
+        query_table = '''
         CREATE TABLE "files" (
 	"path"	text NOT NULL UNIQUE,
 	"priority"	integer NOT NULL DEFAULT 4,
 	PRIMARY KEY("path"));
         '''
-        self.cur.execute(query)
+        self.cur.execute(query_table)
         self.db_connect.commit()
         self._stop()
 
@@ -98,17 +101,18 @@ class FilesDB():
     def delete_files(self, files):
         self._start()
 
+        # TODO count deleted files
         for f in files:
             query = f"delete from files where path like '{f}'"
             self.cur.execute(query)
 
-        # TODO: real commiting
         self.db_connect.commit()
 
         self._stop()
 
     def delete_all_files(self):
         self._start()
+        # TODO count deleted files
 
         query = f"delete from files"
         self.cur.execute(query)
@@ -131,11 +135,21 @@ class FilesDB():
 
         self._stop()
 
+    # TODO Rename to is_empty_table
     def is_empty(self) -> bool:
         self._start()
         q = 'SELECT CASE WHEN EXISTS(SELECT 1 FROM files) THEN 0 ELSE 1 END AS IsEmpty;'
-        response = self.cur.execute(q)
+        response = bool(self.cur.execute(q).fetchone()[0])
         self._stop()
+        return response
+
+    def is_empty_base(self):
+        pass
+        self._start()
+        q = 'SELECT object_id FROM sys.tables WHERE name = 'Artists';'
+        response = bool(self.cur.execute(q).fetchone()[0])
+        self._stop()
+        # if lasjfklsdjf TODO
         return response
 
 

@@ -5,7 +5,6 @@ import os
 class ConfigError(Exception):
     pass
 
-
 # TODO Make syntax checher for config file
 class ConfigManager():
 
@@ -14,7 +13,7 @@ class ConfigManager():
     def __init__(self, project_dir, cfgfile_path=None):
         self.project_dir = project_dir
         self.cfgfile_name = 'config.txt'
-        if cfgfile_path is None
+        if cfgfile_path is None:
             self.cfgfile_path = self.project_dir + self.cfgfile_name
         else:
             self.cfgfile_path = cfgfile_path
@@ -24,9 +23,8 @@ class ConfigManager():
             'database_path': f'{self.project_dir}whistle_bristle/db/files.db'
             }
 
-    def show_info(self):
-        print(
-            f'Config file "{self.cfgfile_name}":\n\tIs empty: {self.is_blank_cfg()}\n\tPath to: {self.cfgfile_path}')
+    def get_info(self):
+        return f'Config file "{self.cfgfile_name}":\n\tIs empty: {self.is_blank_cfg()}\n\tPath to: {self.cfgfile_path}'
 
     def _init_cfg_file(self):
         '''Creates config file if it is not exists.'''
@@ -47,6 +45,14 @@ class ConfigManager():
         with open(self.cfgfile_path, 'w') as cfgfile:
             for cfg in self.DEFAULT_CONFIG:
                 cfgfile.write(f'{cfg}={self.DEFAULT_CONFIG[cfg]}' + '\n')
+
+
+    def set_cfg_value(self, key, value):
+        '''Set some value to config'''
+        if key not in self.DEFAULT_CONFIG.keys():
+            raise ValueError('No such key in configuration of the app')
+        with open(self.cfgfile_path, 'a') as cfgfile:
+            cfgfile.write(f'{key}={value}' + '\n')
 
     def get_cfg_value(self, key):
         '''Get some value from config'''
