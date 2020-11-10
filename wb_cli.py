@@ -117,8 +117,6 @@ def main():
     if ee.is_blank_config():
         ee.set_default_config()
 
-    # TODO if only command name print help
-
     if args.cmd_type == 'config':
         if args.pathtodb:
             path_to_db = ee.get_database_path()
@@ -165,6 +163,8 @@ def main():
         ee.set_keycombo(keycombo=args.keycombo)
         breakpoint()
         ee.start_listener()
+    else:
+        parser.print_help()
 
 
 if __name__ == '__main__':
