@@ -18,7 +18,7 @@ class FilesDB():
         self.path = path
         self.cur = None
         self.db_connect = None
-        if create_if_no and self.is_empty():
+        if create_if_no and self.is_empty_base():
             self.create_default()
 
     def get_path(self):
@@ -147,9 +147,11 @@ class FilesDB():
         pass
         self._start()
         q = "SELECT name FROM sqlite_master WHERE type='table' AND name='{files}';"
-        response = bool(self.cur.execute(q).fetchone()[0])
+        response = self.cur.execute(q).fetchall()
         self._stop()
-        return response
+        if len(response) > 0:
+            return True
+        return False
 
 
 if __name__ == '__main__':
