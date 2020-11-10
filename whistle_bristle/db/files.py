@@ -146,10 +146,9 @@ class FilesDB():
     def is_empty_base(self):
         pass
         self._start()
-        q = 'SELECT object_id FROM sys.tables WHERE name = 'Artists';'
+        q = "SELECT name FROM sqlite_master WHERE type='table' AND name='{files}';"
         response = bool(self.cur.execute(q).fetchone()[0])
         self._stop()
-        # if lasjfklsdjf TODO
         return response
 
 
