@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import argparse
 import os
 import sys
@@ -6,55 +7,87 @@ from whistle_bristle.emergency_erase import EmergencyErase
 from whistle_bristle.utils.key_combination import check_key
 from whistle_bristle.utils.checkers import check_path, check_path_and_priority
 
+version = '1.0'
+
 
 def create_parser():
     # TODO: Set description for a parser
 
-    desc = ''
+    prog = "Whistle&Bristle"
+    wb_desc = "This program can help you in emergency situation by deleting all \
+        files that you don't want to be on your computer when someone \nwill \
+        take control over it. Firstly, you set some configuration. Secondly,\
+        set 'bristle' files, which will be deleted. Finally, start 'whistle'\
+        and when you press key combination, files will be deleted."
+    epilog = '(c) Timofey 2020. The author of the program, as always, \
+        assumes no responsibility for anything.'
+    bristle_help = 'Manipulating with important files database.'
+    whistle_help = 'Start listening for key combination you choose and\
+        deletes files when it presse.'
+    config_help = 'Configure the program (like database path and etc).'
     keycombo_help = "Key combination to start erase ( surround with '' )"
     files_help = 'Files and dirs you want to be deleted after pressing hotkey'
-    files_priority_help = 'Files and dirs you want to be deleted after pressing hotkey with priority of deleting ( syntax: "path_to_file_or_dir@priority_number" )'
+    files_priority_help = 'Files and dirs you want to be deleted after \
+        pressing hotkey with priority of deleting ( syntax: \
+        "filename@priority" )'
     files_delete_help = 'Deletes files from database'
-    changing_priority_help = 'Changing priority of deleting files "filename@priority"'
+    changing_priority_help = 'Changing priority of deleting \
+        files "filename@priority"'
+    list_help = 'List all important files and dirs'
+    deleteall_help = 'Delete all files and dirs from database'
 
-    parser = argparse.ArgumentParser(description=desc)
-    subparsers = parser.add_subparsers(dest='cmd_type')
+    parser = argparse.ArgumentParser(
+        prog=prog, description=wb_desc, epilog=epilog)
+    parser.add_argument('--version','-v',
+                        action='version',
+                        help='Show program version',
+                        version=f'%(prog)s {version}')
+    subparsers = parser.add_subparsers(
+        dest='cmd_type', title='Possible commands')
 
-    bristle_parser = subparsers.add_parser('bristle')
+    bristle_parser = subparsers.add_parser(
+        'bristle', description=bristle_help, help=bristle_help)
     bristle_actions = bristle_parser.add_mutually_exclusive_group()
 
     bristle_actions.add_argument('-fo', '--filesonly',
                                  nargs='+',
                                  type=check_path,
                                  default=False,
-                                 help=files_help
+                                 help=files_help,
+                                 metavar='filename'
                                  )
     bristle_actions.add_argument('-da', '--deleteall',
                                  action='store_true',
+                                 help=deleteall_help,
                                  default=False)
     bristle_actions.add_argument('-l', '--listfiles',
                                  action='store_true',
+                                 help=list_help,
                                  default=False)
     bristle_actions.add_argument('-fp', '--filespriority',
                                  nargs='+',
+                                 metavar='filename@4',
                                  type=check_path_and_priority,
                                  default=False,
                                  help=files_priority_help
                                  )
     bristle_actions.add_argument('-d', '--delete',
                                  nargs='+',
+                                 metavar='filename',
                                  type=check_path,
                                  default=False,
                                  help=files_delete_help
                                  )
     bristle_actions.add_argument('-cp', '--changepriority',
                                  nargs='+',
+                                 metavar='filename@4',
                                  type=check_path_and_priority,
                                  default=False,
                                  help=changing_priority_help
                                  )
 
-    config_parser = subparsers.add_parser('config')
+    config_parser = subparsers.add_parser(
+        'config', description=config_help, help=config_help)
     config_actions = config_parser.add_mutually_exclusive_group()
     config_actions.add_argument('-i', '--info',
                                 action='store_true',
@@ -65,16 +98,18 @@ def create_parser():
                                 default=False,
                                 help='Show files database path')
 
-    whistle_parser = subparsers.add_parser('whistle')
+    whistle_parser = subparsers.add_parser(
+        'whistle', description=whistle_help, help=whistle_help)
     whistle_parser.add_argument('-k', '--keycombo',
+                                metavar='<key>+<Combination>+letter',
                                 type=check_key,
-                                default='<ctrl>+<alt>+b',
+                                default='<ctrl>+<alt>+e',
                                 help=keycombo_help
                                 )
     return parser
 
 
-if __name__ == '__main__':
+def main():
     parser = create_parser()
     args = parser.parse_args(sys.argv[1:])
 
@@ -130,3 +165,7 @@ if __name__ == '__main__':
         ee.set_keycombo(keycombo=args.keycombo)
         breakpoint()
         ee.start_listener()
+
+
+if __name__ == '__main__':
+    main()
