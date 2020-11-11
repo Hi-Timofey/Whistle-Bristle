@@ -5,7 +5,7 @@ import os
 class ConfigError(Exception):
     pass
 
-# TODO Make syntax checher for config file
+# TODO Make syntax checker for config file
 class ConfigManager():
 
     DATABASE_PATH = 'database_path'
@@ -22,6 +22,10 @@ class ConfigManager():
         self.DEFAULT_CONFIG = {
             'database_path': f'{self.project_dir}whistle_bristle/db/files.db'
             }
+
+    def erase(self):
+        os.remove(self.cfgfile_path)
+        self.project_dir = None
 
     def get_info(self):
         return f'Config file "{self.cfgfile_name}":\n\tIs empty: {self.is_blank_cfg()}\n\tPath to: {self.cfgfile_path}'
@@ -64,5 +68,4 @@ class ConfigManager():
                 if l[0] != '#' and '=' in l:
                     name, value = l.split('=')
                     if name == key:
-                        # print(f'"{name}" was found! value="{value}"')
                         return value

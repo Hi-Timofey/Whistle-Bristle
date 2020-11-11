@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import sqlite3 as sql
 from os.path import isfile, getsize
+from os import remove
+
 
 
 class DBError(ValueError):
@@ -20,6 +22,12 @@ class FilesDB():
         self.db_connect = None
         if create_if_no and self.is_empty_base():
             self.create_default()
+
+    def erase(self):
+        remove(self.path)
+        self.path = None
+        self.cur = None
+        self.db_connect = None
 
     def get_path(self):
         return self.path
@@ -130,13 +138,11 @@ class FilesDB():
             query = f"update files set priority = {priority} where path like '{path}'"
             self.cur.execute(query)
 
-        # TODO: real commiting
         self.db_connect.commit()
 
         self._stop()
 
-    # TODO Rename to is_empty_table
-    def is_empty(self) -> bool:
+    def is_empty_table(self) -> bool:
         self._start()
         q = 'SELECT CASE WHEN EXISTS(SELECT 1 FROM files) THEN 0 ELSE 1 END AS IsEmpty;'
         response = bool(self.cur.execute(q).fetchone()[0])
@@ -152,6 +158,8 @@ class FilesDB():
         if len(response) > 0:
             return True
         return False
+
+
 
 
 if __name__ == '__main__':
