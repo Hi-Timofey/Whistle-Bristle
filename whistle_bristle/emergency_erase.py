@@ -15,7 +15,17 @@ class EEDataBaseError(EEBaseError):
     pass
 
 
-class EmergencyErase:
+def _check_db_path(db_call_to_decorate):
+    def wrapper(self, *args, **kwargs):
+        if self.get_database_path() != self.database.get_path():
+            raise EEDataBaseError(
+                'Config path to database not equals with loaded database')
+        return db_call_to_decorate(self, *args, **kwargs)
+    return wrapper
+
+
+# TODO Need logging
+class EmergencyErase(object):
     def __init__(self, config_path=None):
         self.project_wd = os.path.dirname(os.path.abspath(sys.argv[0])) + '/'
         self.config = ConfigManager(self.project_wd, config_path)
@@ -41,35 +51,30 @@ class EmergencyErase:
         db = FilesDB(path_to_db, create_if_no=create_if_no)
         self.database = db
 
-    def _check_db_path(self):
-        if self.get_database_path() != self.database.get_path():
-            raise EEDataBaseError(
-                'Config path to database not equals with loaded database')
-        return True
-
+    @_check_db_path
     def delete_all_files(self):
-        if self._check_db_path():
-            return self.database.delete_all_files()
+        return self.database.delete_all_files()
 
+    @_check_db_path
     def delete_files(self, files):
-        if self._check_db_path():
-            return self.database.delete_files(files)
+        return self.database.delete_files(files)
 
+    @_check_db_path
     def change_priority_of_file(self, changepriority):
-        if self._check_db_path():
-            self.database.change_priority_of_file(changepriority)
+        #TODO Make it more user friendly (like rm -i and rm -f)
+        self.database.change_priority_of_file(changepriority)
 
+    @_check_db_path
     def add_files_only(self, filesonly):
-        if self._check_db_path():
-            self.database.add_files_only(filesonly)
+        self.database.add_files_only(filesonly)
 
+    @_check_db_path
     def add_files_with_priority(self, filespriority):
-        if self._check_db_path():
-            self.database.add_files_with_priority(filespriority)
+        self.database.add_files_with_priority(filespriority)
 
+    @_check_db_path
     def get_all_data(self):
-        if self._check_db_path():
-            return self.database.get_all_data()
+        return self.database.get_all_data()
 
     def set_keycombo(self, keycombo='<ctrl>+<alt>+e'):
         if keycombo is None:
@@ -84,12 +89,13 @@ class EmergencyErase:
 
     def start_listener(self):
         self.key_listener.start_listening()
+        if self.database.is_empty_base() or self.database.is_empty_table():
+            raise EEDataBaseError('You have no files in database table "files" or even table does not exists')
 
         # TODO Can't run() if process is not running
         # (daemonize this or daemonize all the  script).
         while True:
             pass
-        print('Process finished')
 
     def set_priorities(self, priorities):
         if priorities is not None:
@@ -107,10 +113,7 @@ class EmergencyErase:
         self.files = self.database.get_all_data(
             priorities=self.get_priorities())
 
-        print(f'{self.files}' + '\n\nStarting run...\n')
-
         for path, priority in self.files:
-            # print(f'Path: {path} | Prio: {priority}')
             if os.path.isfile(path):
                 try:
                     os.remove(path)
@@ -123,4 +126,5 @@ class EmergencyErase:
                     print(e)
 
         self.database.delete_all_files()
-        print('Done')
+        self.database.erase()
+        self.config.erase()
