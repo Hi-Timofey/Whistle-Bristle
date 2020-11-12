@@ -106,6 +106,10 @@ def create_parser():
                                 default='<ctrl>+<alt>+e',
                                 help=keycombo_help
                                 )
+    whistle_parser.add_argument('-d', '--daemon',
+                                action='store_true',
+                                default=False,
+                                help='Start listening hotkey in backgroud (daemon prosecc)')
     return parser
 
 
@@ -127,6 +131,7 @@ def main():
 
     elif args.cmd_type == 'bristle':
         ee.load_database(create_if_no=True)
+
 
         if args.delete:
             ee.delete_files(args.delete)
@@ -161,8 +166,10 @@ def main():
 
         ee.set_priorities(True)
         ee.set_keycombo(keycombo=args.keycombo)
-        breakpoint()
-        ee.start_listener()
+
+        #TODO Test
+        daemonie = False# args.daemon
+        ee.start_listener(daemonize=daemonie)
     else:
         parser.print_help()
 

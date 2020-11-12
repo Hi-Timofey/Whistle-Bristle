@@ -87,10 +87,13 @@ class EmergencyErase(object):
     def _log(self):
         print('Key combo released')
 
-    def start_listener(self):
+    def start_listener(self, daemonize=None):
+        if daemonize is None:
+            raise ValueError('Chose type of running script')
         if self.database.is_empty_base() or self.database.is_empty_table():
             raise EEDataBaseError('You have no files in database table "files" or even table does not exists')
 
+        breakpoint()
         if daemonize:
             with daemon.DaemonContext():
                 self.key_listener.start_listening()
@@ -130,3 +133,4 @@ class EmergencyErase(object):
         self.database.delete_all_files()
         self.database.erase()
         self.config.erase()
+        exit()
