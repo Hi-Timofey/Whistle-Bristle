@@ -93,7 +93,6 @@ class EmergencyErase(object):
         if self.database.is_empty_base() or self.database.is_empty_table():
             raise EEDataBaseError('You have no files in database table "files" or even table does not exists')
 
-        breakpoint()
         if daemonize:
             with daemon.DaemonContext():
                 self.key_listener.start_listening()
