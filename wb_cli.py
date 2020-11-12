@@ -11,7 +11,7 @@ version = '1.0'
 
 
 def create_parser():
-    # TODO: Set description for a parser
+    # TODO: Add translator
 
     prog = "Whistle&Bristle"
     wb_desc = "This program can help you in emergency situation by deleting all \

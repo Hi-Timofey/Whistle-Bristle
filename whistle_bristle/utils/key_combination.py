@@ -74,19 +74,19 @@ def check_key(key_combo):
 
 if __name__ == '__main__':
     pass
-    key0 = '<ctRl>-<alt>-b'
-    key1 = '<ctrl>+<Shift>+<Alt>+"'
-    key2 = 'ctRl-alt-b'
-    key3 = 'ctRl alt b'
+    # key0 = '<ctRl>-<alt>-b'
+    # key1 = '<ctrl>+<Shift>+<Alt>+"'
+    # key2 = 'ctRl-alt-b'
+    # key3 = 'ctRl alt b'
 
-    print(check_key(key0))
-    print(check_key(key1))
-    print(check_key(key2))
-    print(check_key(key3))
+    # print(check_key(key0))
+    # print(check_key(key1))
+    # print(check_key(key2))
+    # print(check_key(key3))
 
-    key_com0 = KeyCombinationListener(key3, lambda: print('pressed!'),
-                              lambda: print('released!'))
+    # key_com0 = KeyCombinationListener(key3, lambda: print('pressed!'),
+    #                           lambda: print('released!'))
 
-    key_com0.start_listening()
+    # key_com0.start_listening()
 
-    input()
+    # input()

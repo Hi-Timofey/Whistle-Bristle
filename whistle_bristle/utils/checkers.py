@@ -4,17 +4,13 @@ import os
 def check_cfg_file(cfgfile_path):
     '''Check if config file exists or not'''
 
-    if os.path.isfile(cfgfile_path):
-        return True
-    else:
-        return False
+    return os.path.isfile(cfgfile_path)
 
 
 def check_path(string):
     '''
-    Check if the string path is file of directory
+
     '''
-   # TODO: Move to utils
 
     string = os.path.expanduser(string)
     if os.path.isdir(string) or os.path.isfile(string):
@@ -30,7 +26,6 @@ def check_path_and_priority(string):
     '''
     Check if the string path is file of directory
     '''
-    # TODO: Move to utils
 
     try:
         path, priority = string.split('@')
@@ -38,7 +33,7 @@ def check_path_and_priority(string):
         raise ValueError(
             f'"{string}" has incorrect syntax ( example: "file.txt@4" )')
 
-    if not 1<=int(priority)<=7:
+    if not 1 <= int(priority) <= 7:
         raise ValueError('Incorrect priority number (must be from 1 to 7)')
     path = os.path.expanduser(path)
     if os.path.isdir(path) or os.path.isfile(path):

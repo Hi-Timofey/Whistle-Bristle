@@ -53,6 +53,8 @@ class ConfigManager():
 
     def set_cfg_value(self, key, value):
         '''Set some value to config'''
+        key = key.lower().strip().replace('\n','').replace('\t','')
+        value = value.strip().replace('\n','').replace('\t','')
         if key not in self.DEFAULT_CONFIG.keys():
             raise ValueError('No such key in configuration of the app')
         with open(self.cfgfile_path, 'a') as cfgfile:
