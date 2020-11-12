@@ -20,7 +20,7 @@ class ConfigManager():
         self._init_cfg_file()
 
         self.DEFAULT_CONFIG = {
-            'database_path': f'{self.project_dir}whistle_bristle/db/files.db'
+            'database_path': f'{self.project_dir}whistle_bristle/db/files.sqlite'
             }
 
     def erase(self):
