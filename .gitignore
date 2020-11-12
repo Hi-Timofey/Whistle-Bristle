@@ -99,3 +99,4 @@ TODO.txt
 .testing_key_combination.py
 config.txt
 whistle_bristle/db/files.db
+whistle_bristle/db/files.sqlite

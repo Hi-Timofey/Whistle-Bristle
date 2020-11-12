@@ -4,7 +4,7 @@ import sys
 from whistle_bristle.utils.config_manager import *
 from whistle_bristle.db.files import *
 from whistle_bristle.utils.key_combination import *
-# import daemon
+import daemon
 
 
 class EEBaseError(Exception):
@@ -87,15 +87,19 @@ class EmergencyErase(object):
     def _log(self):
         print('Key combo released')
 
-    def start_listener(self):
-        self.key_listener.start_listening()
+    def start_listener(self, daemonize=None):
+        if daemonize is None:
+            raise ValueError('Chose type of running script')
         if self.database.is_empty_base() or self.database.is_empty_table():
             raise EEDataBaseError('You have no files in database table "files" or even table does not exists')
 
-        # TODO Can't run() if process is not running
-        # (daemonize this or daemonize all the  script).
-        while True:
-            pass
+        if daemonize:
+            with daemon.DaemonContext():
+                self.key_listener.start_listening()
+        else:
+            self.key_listener.start_listening()
+            while True:
+                pass
 
     def set_priorities(self, priorities):
         if priorities is not None:
@@ -128,3 +132,4 @@ class EmergencyErase(object):
         self.database.delete_all_files()
         self.database.erase()
         self.config.erase()
+        exit()

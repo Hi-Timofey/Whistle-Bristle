@@ -12,16 +12,18 @@ class DBError(ValueError):
 class FilesDB():
 
     def __init__(self, path=None, create_if_no=False):
+
         if path is None:
             raise ValueError('No path to db')
-        if not FilesDB.isSQLite3(path):
-            if not create_if_no:
-                raise DBError('There are no sql database file')
+        if not FilesDB.isSQLite3(path) and not create_if_no:
+            raise DBError('There are no sql database file')
+
         self.path = path
         self.cur = None
         self.db_connect = None
-        if create_if_no and self.is_empty_base():
-            self.create_default()
+        if create_if_no and not FilesDB.isSQLite3(self.path):
+            self.create_default_base()
+
 
     def erase(self):
         remove(self.path)
@@ -32,7 +34,7 @@ class FilesDB():
     def get_path(self):
         return self.path
 
-    def create_default(self):
+    def create_default_table(self):
         '''Creates the default database with "Files" table'''
         self._start()
         query_table = '''
@@ -44,6 +46,26 @@ class FilesDB():
         self.cur.execute(query_table)
         self.db_connect.commit()
         self._stop()
+
+    def create_default_base(self):
+        '''Creates the default database with without table'''
+        # TODO the greatest crutch you ever wrote
+        self._start()
+        query_table = '''
+        CREATE TABLE "files" (
+	"path"	text NOT NULL UNIQUE,
+	"priority"	integer NOT NULL DEFAULT 4,
+	PRIMARY KEY("path"));
+        '''
+        self.cur.execute(query_table)
+        self.db_connect.commit()
+        self.cur.execute(f"insert into files values('test', 4)")
+        self.db_connect.commit()
+        self.cur.execute(f"delete from files where path like 'test'")
+        self.db_connect.commit()
+        self._stop()
+
+
 
     def _start(self):
         self.db_connect = sql.connect(self.path)
@@ -150,14 +172,11 @@ class FilesDB():
         return response
 
     def is_empty_base(self):
-        pass
         self._start()
-        q = "SELECT name FROM sqlite_master WHERE type='table' AND name='{files}';"
+        q = "SELECT name FROM sqlite_master WHERE type='table' AND name='files';"
         response = self.cur.execute(q).fetchall()
         self._stop()
-        if len(response) > 0:
-            return True
-        return False
+        return 'files' in response
 
 
 
