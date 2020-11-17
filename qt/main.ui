@@ -7,46 +7,169 @@
     <x>0</x>
     <y>0</y>
     <width>470</width>
-    <height>450</height>
+    <height>650</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>470</width>
-    <height>450</height>
+    <height>650</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16000</width>
+    <height>1000</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Whistle&amp;Bristle</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="gridLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>19</x>
-      <y>19</y>
-      <width>431</width>
-      <height>381</height>
-     </rect>
+   <property name="maximumSize">
+    <size>
+     <width>16000</width>
+     <height>1000</height>
+    </size>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="leftMargin">
+     <number>16</number>
     </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <property name="sizeConstraint">
-      <enum>QLayout::SetMaximumSize</enum>
-     </property>
-     <property name="leftMargin">
-      <number>16</number>
-     </property>
-     <property name="topMargin">
-      <number>16</number>
-     </property>
-     <property name="rightMargin">
-      <number>16</number>
-     </property>
-     <property name="bottomMargin">
-      <number>16</number>
-     </property>
-    </layout>
-   </widget>
+    <property name="topMargin">
+     <number>4</number>
+    </property>
+    <property name="rightMargin">
+     <number>16</number>
+    </property>
+    <property name="bottomMargin">
+     <number>32</number>
+    </property>
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMaximumSize</enum>
+      </property>
+      <item>
+       <widget class="QLabel" name="app_name">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Whistle&amp;Bristle</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="table_label_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Files and dir's that will be deleted:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="tableWidget">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>429</height>
+           </size>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::CurrentChanged|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+          </property>
+          <property name="columnCount">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item alignment="Qt::AlignLeft">
+         <widget class="QLabel" name="path_to_cur_db">
+          <property name="text">
+           <string>Path to db</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="refreshBtn">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Refresh</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addBtn">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Add</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="saveBtn">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Save</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -57,32 +180,62 @@
      <height>30</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuWhistle_Bristle">
+   <widget class="QMenu" name="menuMain">
     <property name="title">
-     <string>Whistle&amp;Bristle</string>
+     <string>Menu</string>
     </property>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuDataBase">
     <property name="title">
      <string>DataBase</string>
     </property>
+    <addaction name="actionLoad_database"/>
    </widget>
    <widget class="QMenu" name="menuConfig">
     <property name="title">
      <string>Config</string>
     </property>
+    <addaction name="actionLoad_config_file"/>
+    <addaction name="actionSet_default_config"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionAbout"/>
    </widget>
-   <addaction name="menuWhistle_Bristle"/>
+   <addaction name="menuMain"/>
    <addaction name="menuDataBase"/>
    <addaction name="menuConfig"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionLoad_config_file">
+   <property name="text">
+    <string>Load config file</string>
+   </property>
+  </action>
+  <action name="actionSet_default_config">
+   <property name="text">
+    <string>Set default config</string>
+   </property>
+  </action>
+  <action name="actionLoad_database">
+   <property name="text">
+    <string>Load database</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

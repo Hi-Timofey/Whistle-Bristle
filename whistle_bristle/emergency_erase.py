@@ -33,6 +33,9 @@ class EmergencyErase(object):
     def is_blank_config(self):
         return self.config.is_blank_cfg()
 
+    def get_config_info(self):
+        return self.config.get_info()
+
     def set_default_config(self):
         self.config.set_default()
 
