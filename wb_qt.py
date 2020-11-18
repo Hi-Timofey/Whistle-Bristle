@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import sys
 
 from PyQt5 import uic  # Импортируем uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QMessageBox, QFileDialog
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QTableWidgetItem
 import whistle_bristle
 from whistle_bristle.emergency_erase import EmergencyErase
@@ -20,6 +20,32 @@ class WhistleBristleMainWindow(QMainWindow):
     def main(self):
         self.onCreate()
         self.tableView()
+        self.menuBar()
+
+    def menuBar(self):
+        self.actionLoad_config_file.triggered.connect(self.load_config)
+        self.actionSet_default_config.triggered.connect(
+            self.ee.set_default_config)
+        self.actionLoad_database.triggered.connect(self.load_db)
+        self.actionExit.triggered.connect(exit)
+
+    def load_config(*args):
+        fname = QFileDialog.getOpenFileName(args[0], 'Load config file', '')[0].strip()
+        print(fname, type(fname))
+        try:
+            args[0].ee.set_config_file(fname)
+        except BaseException as e:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("You loaded wrong file")
+            msg.setInformativeText(str(e))
+            msg.setWindowTitle("Config error.")
+            msg.exec_()
+
+    #TODO
+    def load_db(*args):
+        fname = QFileDialog.getOpenFileName(args[0], 'Load database file', '')[0].strip()
+        print(fname, type(fname))
 
     def onCreate(self):
 
@@ -33,24 +59,64 @@ class WhistleBristleMainWindow(QMainWindow):
     def tableView(self):
         self.ee.load_database(create_if_no=True)
         self.refreshBtn.clicked.connect(self.refresh_result)
-
+        self.tableWidget.setColumnWidth(0, 256)
+        self.tableWidget.setColumnWidth(1, 70)
         self.tableWidget.cellChanged.connect(self.item_changed)
         self.saveBtn.clicked.connect(self.save_results)
         self.addBtn.clicked.connect(self.add_result)
 
-    #----
     def save_results(self):
-        print('save')
+        # TODO: Create radiobutton for not rewriting db
         self.statusBar().showMessage('Saving.')
+        column = 0
+        not_unique = []
+        # rowCount() This property holds the number of rows in the table
+        for row in range(self.tableWidget.rowCount()):
+            # item(row, 0) Returns the item for the given row and column if one
+            # has been set; otherwise returns nullptr.
+            _item = self.tableWidget.item(row, column)
+            if _item:
+                path = self.tableWidget.item(row, column).text()
+                prio = self.tableWidget.item(row, column+1).text()
+                # print(f'row: {row}, column: {column}, item={item}')
+                if EmergencyErase.check_file_path_and_priority(
+                        f'{path}@{prio}'):
+                    try:
+                        self.ee.add_files_with_priority((path, prio,))
+                    except BaseException:
+                        not_unique.append(path)
 
-    def item_changed(self):
-        print('item')
-        self.statusBar().showMessage('Item changed.')
-    #----
+        if len(not_unique) > 0:
+            print(not_unique)
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("You entered not unique path")
+            msg.setInformativeText(
+                f'"{", ".join(not_unique)}" already in database')
+            msg.setWindowTitle("Not unique path")
+            msg.exec_()
+        self.statusBar().showMessage('Changes writed, refresh table.')
+
+    def item_changed(self, *coords):
+        # print('item', self.tableWidget.item, coords)
+        # self.statusBar().showMessage('Item changed.')
+        row, col = coords
+        item = self.tableWidget.item(row, col).text()
+        if col == 0:
+            try:
+                path = EmergencyErase.check_file_path(str(item))
+            except ValueError as e:
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Critical)
+                msg.setText("You entered incorrect path")
+                msg.setInformativeText(str(e)+' (dirs ends with "/")')
+                msg.setWindowTitle("Incorrect value")
+                msg.exec_()
+                self.tableWidget.setItem(row, col, ' ')
+        # elif col == 1:
 
     def add_result(self):
-        print('add')
-        self.tableWidget.insertRow(1)
+        self.tableWidget.insertRow(self.tableWidget.model().rowCount())
 
     def refresh_result(self):
         result = self.ee.get_all_data()
@@ -69,13 +135,8 @@ class WhistleBristleMainWindow(QMainWindow):
             for j, val in enumerate(elem):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
         self.modified = {}
+        self.statusBar().showMessage('')
 
-
-    def item_changed(self):
-        pass
-
-    def save_results(self):
-        pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
