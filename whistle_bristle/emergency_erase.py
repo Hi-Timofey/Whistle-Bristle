@@ -34,6 +34,7 @@ class EmergencyErase(object):
     def set_config_file(self, config_path):
         if os.path.isfile(config_path) and '.txt' in config_path:
             self.config = ConfigManager(self.project_wd, config_path)
+            return
         raise ValueError('Not correct path to config file or not a config file')
 
     def set_config_value(self, key, value):

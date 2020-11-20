@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>470</width>
+    <width>549</width>
     <height>650</height>
    </rect>
   </property>
@@ -101,7 +101,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>429</height>
+            <height>200</height>
            </size>
           </property>
           <property name="sizeAdjustPolicy">
@@ -127,6 +127,18 @@
         </item>
         <item alignment="Qt::AlignLeft">
          <widget class="QLabel" name="path_to_cur_db">
+          <property name="minimumSize">
+           <size>
+            <width>64</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>18</height>
+           </size>
+          </property>
           <property name="text">
            <string>Path to db</string>
           </property>
@@ -179,6 +191,29 @@
       </item>
      </layout>
     </item>
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+       <widget class="QPushButton" name="startBtn">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>300</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Start Listening</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -186,7 +221,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>470</width>
+     <width>549</width>
      <height>30</height>
     </rect>
    </property>

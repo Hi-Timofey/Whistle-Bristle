@@ -21,6 +21,11 @@ class WhistleBristleMainWindow(QMainWindow):
         self.onCreate()
         self.tableView()
         self.menuBar()
+        self.onStart()
+
+    def onStart(self):
+
+        pass
 
     def menuBar(self):
         self.actionLoad_config_file.triggered.connect(self.load_config)
@@ -30,7 +35,8 @@ class WhistleBristleMainWindow(QMainWindow):
         self.actionExit.triggered.connect(exit)
 
     def load_config(*args):
-        fname = QFileDialog.getOpenFileName(args[0], 'Load config file', '')[0].strip()
+        fname = QFileDialog.getOpenFileName(
+            args[0], 'Load config file', '')[0].strip()
         print(fname, type(fname))
         try:
             args[0].ee.set_config_file(fname)
@@ -42,14 +48,16 @@ class WhistleBristleMainWindow(QMainWindow):
             msg.setWindowTitle("Config error.")
             msg.exec_()
 
-    #TODO
+    # TODO
     def load_db(self):
-        fname = QFileDialog.getOpenFileName(self, 'Load database file', '')[0].strip()
+        fname = QFileDialog.getOpenFileName(
+            self, 'Load database file', '')[0].strip()
         print(fname, type(fname))
 
         self.ee.set_config_value('database_path', fname)
         self.ee.load_database()
-        self.path_to_cur_db.setText('Path to db:' + self.ee.get_database_path())
+        self.path_to_cur_db.setText(
+            'Path to db:' + self.ee.get_database_path())
 
     def onCreate(self):
 
@@ -83,12 +91,15 @@ class WhistleBristleMainWindow(QMainWindow):
                 path = self.tableWidget.item(row, column).text()
                 prio = self.tableWidget.item(row, column+1).text()
                 # print(f'row: {row}, column: {column}, item={item}')
-                if EmergencyErase.check_file_path_and_priority(
-                        f'{path}@{prio}'):
-                    try:
-                        self.ee.add_files_with_priority((path, prio,))
-                    except BaseException:
-                        not_unique.append(path)
+                try:
+                    if EmergencyErase.check_file_path_and_priority(
+                            f'{path}@{prio}'):
+                        try:
+                            self.ee.add_files_with_priority((path, prio,))
+                        except BaseException:
+                            not_unique.append(path)
+                except ValueError as e:
+                    pass
 
         if len(not_unique) > 0:
             print(not_unique)
@@ -108,22 +119,36 @@ class WhistleBristleMainWindow(QMainWindow):
         item = self.tableWidget.item(row, col).text()
         if col == 0:
             try:
-                path = EmergencyErase.check_file_path(str(item))
-            except ValueError as e:
+                if str(item) != ' ':
+                    path = EmergencyErase.check_file_path(str(item))
+            except BaseException as e:
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
                 msg.setText("You entered incorrect path")
                 msg.setInformativeText(str(e)+' (dirs ends with "/")')
                 msg.setWindowTitle("Incorrect value")
                 msg.exec_()
-                self.tableWidget.setItem(row, col, ' ')
-        # elif col == 1:
+                self.tableWidget.setItem(row, col, QTableWidgetItem(' '))
+        elif col == 1:
+            prio = self.tableWidget.item(row, col)
+            try:
+                assert 0 <= int(prio.text()) <= 7
+            except BaseException as e:
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Critical)
+                msg.setText("You entered incorrect priority")
+                msg.setInformativeText('Priority must be a number from 1 to 7')
+                msg.setWindowTitle("Incorrect value")
+                msg.exec_()
+                self.tableWidget.setItem(row, col, QTableWidgetItem('4'))
 
     def add_result(self):
         self.tableWidget.insertRow(self.tableWidget.model().rowCount())
 
     def refresh_result(self):
+        self.ee.load_database()
         result = self.ee.get_all_data()
+        self.path_to_cur_db.setText(self.ee.get_database_path())
         # Заполнили размеры таблицы
         self.tableWidget.setRowCount(len(result))
         # Если запись не нашлась, то не будем ничего делать

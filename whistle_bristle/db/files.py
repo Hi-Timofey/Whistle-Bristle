@@ -128,13 +128,18 @@ class FilesDB():
     def add_files_with_priority(self, *files_with_priority):
         self._start()
 
+        count = 0
         for f in files_with_priority:
             path, priority = f
-            self.cur.execute(f"insert into files values('{path}', {priority})")
+            if os.path.isdir(path) or os.path.isfile(path):
+                self.cur.execute(f"insert into files values('{path}', {priority})")
+                count += 1
+
 
         self.db_connect.commit()
 
         self._stop()
+        return count
 
     def delete_files(self, files):
         self._start()
