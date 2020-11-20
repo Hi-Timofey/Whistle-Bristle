@@ -28,6 +28,7 @@ def _check_db_path(db_call_to_decorate):
 # TODO Need logging
 class EmergencyErase(object):
     def __init__(self, config_path=None):
+        self.running = False
         self.project_wd = os.path.dirname(os.path.abspath(sys.argv[0])) + '/'
         self.config = ConfigManager(self.project_wd, config_path)
 
@@ -118,12 +119,13 @@ class EmergencyErase(object):
             raise EEDataBaseError(
                 'You have no files in database table "files" or even table does not exists')
 
+        self.running = True
         if daemonize:
             with daemon.DaemonContext():
                 self.key_listener.start_listening()
         else:
             self.key_listener.start_listening()
-            while True:
+            while self.running:
                 pass
 
     def set_priorities(self, priorities):
@@ -157,4 +159,5 @@ class EmergencyErase(object):
         self.database.delete_all_files()
         self.database.erase()
         self.config.erase()
+        self.running = False
         exit()

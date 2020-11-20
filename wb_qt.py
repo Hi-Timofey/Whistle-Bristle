@@ -154,7 +154,9 @@ class WhistleBristleMainWindow(QMainWindow):
                 self.tableWidget.setItem(row, col, QTableWidgetItem('4'))
 
     def add_result(self):
-        self.tableWidget.insertRow(self.tableWidget.model().rowCount())
+        rowCount = self.tableWidget.model().rowCount()
+        self.tableWidget.insertRow(rowCount)
+        self.tableWidget.setItem(rowCount, 1, QTableWidgetItem('4'))
 
     def refresh_result(self):
         self.ee.load_database()
