@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sqlite3 as sql
-from os.path import isfile, getsize
+from os.path import isdir, isfile, getsize
 from os import remove
 
 
@@ -131,10 +131,10 @@ class FilesDB():
         count = 0
         for f in files_with_priority:
             path, priority = f
-            if os.path.isdir(path) or os.path.isfile(path):
-                self.cur.execute(f"insert into files values('{path}', {priority})")
+            if isdir(path) or isfile(path):
+                self.cur.execute(
+                    f"insert into files values('{path}', {priority})")
                 count += 1
-
 
         self.db_connect.commit()
 
