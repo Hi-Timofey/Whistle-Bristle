@@ -36,6 +36,9 @@ class EmergencyErase(object):
             self.config = ConfigManager(self.project_wd, config_path)
         raise ValueError('Not correct path to config file or not a config file')
 
+    def set_config_value(self, key, value):
+        self.config.set_cfg_value(key, value)
+
     def is_blank_config(self):
         return self.config.is_blank_cfg()
 

@@ -43,9 +43,13 @@ class WhistleBristleMainWindow(QMainWindow):
             msg.exec_()
 
     #TODO
-    def load_db(*args):
-        fname = QFileDialog.getOpenFileName(args[0], 'Load database file', '')[0].strip()
+    def load_db(self):
+        fname = QFileDialog.getOpenFileName(self, 'Load database file', '')[0].strip()
         print(fname, type(fname))
+
+        self.ee.set_config_value('database_path', fname)
+        self.ee.load_database()
+        self.path_to_cur_db.setText('Path to db:' + self.ee.get_database_path())
 
     def onCreate(self):
 
