@@ -4,6 +4,7 @@
 import sys
 
 from PyQt5 import uic  # Импортируем uic
+import daemon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QMessageBox, QFileDialog
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QTableWidgetItem
 import whistle_bristle
@@ -24,8 +25,18 @@ class WhistleBristleMainWindow(QMainWindow):
         self.onStart()
 
     def onStart(self):
+        self.startBtn.clicked.connect(self.start_listening)
 
-        pass
+    def start_listening(self):
+        self.ee.load_database()
+        self.ee.set_priorities(True)
+        self.ee.set_keycombo()
+
+        #TODO Костыль
+        with daemon.DaemonContext():
+            daemonie = False
+            self.ee.start_listener(daemonize=daemonie)
+        exit()
 
     def menuBar(self):
         self.actionLoad_config_file.triggered.connect(self.load_config)
