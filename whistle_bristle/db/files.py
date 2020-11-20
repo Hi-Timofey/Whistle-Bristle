@@ -4,7 +4,6 @@ from os.path import isfile, getsize
 from os import remove
 
 
-
 class DBError(ValueError):
     pass
 
@@ -23,7 +22,6 @@ class FilesDB():
         self.db_connect = None
         if create_if_no and not FilesDB.isSQLite3(self.path):
             self.create_default_base()
-
 
     def erase(self):
         remove(self.path)
@@ -64,8 +62,6 @@ class FilesDB():
         self.cur.execute(f"delete from files where path like 'test'")
         self.db_connect.commit()
         self._stop()
-
-
 
     def _start(self):
         self.db_connect = sql.connect(self.path)
@@ -108,6 +104,18 @@ class FilesDB():
         self._stop()
         return response
 
+    def is_path_in_bd(self, path):
+        self._start()
+        if isfile(path):
+            response = self.cur.execute(f'select path from files where {path} \
+                                    like THEN 1 ELSE 0 END AS IsEmpty;').fetchone()
+        else:
+            response = self.cur.execute(
+                f'select path from files where {path + "/"} \
+                                    like THEN 1 ELSE 0 END AS IsEmpty;').fetchone()
+        self._stop()
+        return bool(response)
+
     def add_files_only(self, files):
         self._start()
 
@@ -117,16 +125,21 @@ class FilesDB():
 
         self._stop()
 
-    def add_files_with_priority(self, files_with_priority):
+    def add_files_with_priority(self, *files_with_priority):
         self._start()
 
+        count = 0
         for f in files_with_priority:
             path, priority = f
-            self.cur.execute(f"insert into files values('{path}', {priority})")
+            if os.path.isdir(path) or os.path.isfile(path):
+                self.cur.execute(f"insert into files values('{path}', {priority})")
+                count += 1
+
 
         self.db_connect.commit()
 
         self._stop()
+        return count
 
     def delete_files(self, files):
         self._start()
@@ -177,8 +190,6 @@ class FilesDB():
         response = self.cur.execute(q).fetchall()
         self._stop()
         return 'files' in response
-
-
 
 
 if __name__ == '__main__':

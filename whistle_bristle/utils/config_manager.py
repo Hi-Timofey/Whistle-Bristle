@@ -57,8 +57,22 @@ class ConfigManager():
         value = value.strip().replace('\n','').replace('\t','')
         if key not in self.DEFAULT_CONFIG.keys():
             raise ValueError('No such key in configuration of the app')
-        with open(self.cfgfile_path, 'a') as cfgfile:
+
+        print('---debug---\n')
+
+        with open(self.cfgfile_path, 'r') as cfgfile:
+            config = cfgfile.readlines()
+            for line in config:
+                if key in line:
+                    del config[config.index(line)]
+
+        with open(self.cfgfile_path, 'w') as cfgfile:
+            for line in config:
+                cfgfile.write(line)
             cfgfile.write(f'{key}={value}' + '\n')
+
+        print('---end---\n')
+
 
     def get_cfg_value(self, key):
         '''Get some value from config'''

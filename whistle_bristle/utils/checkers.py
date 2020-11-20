@@ -12,14 +12,14 @@ def check_path(string):
 
     '''
 
-    string = os.path.expanduser(string)
-    if os.path.isdir(string) or os.path.isfile(string):
-        string = os.path.abspath(string)
-        if string[-1] != '/' and os.path.isdir(string):
-            string += '/'
-        return string
+    path = os.path.expanduser(string)
+    if os.path.isdir(path) or os.path.isfile(path):
+        path = os.path.abspath(path)
+        if path[-1] != '/' and os.path.isdir(path):
+            path += '/'
+        return path
     else:
-        raise ValueError(string + ' is not a directory or regular file.')
+        raise ValueError(path + ' is not a directory or regular file.')
 
 
 def check_path_and_priority(string):

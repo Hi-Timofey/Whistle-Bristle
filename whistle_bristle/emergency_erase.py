@@ -1,6 +1,7 @@
 import shutil
 import os
 import sys
+from whistle_bristle.utils.checkers import *
 from whistle_bristle.utils.config_manager import *
 from whistle_bristle.db.files import *
 from whistle_bristle.utils.key_combination import *
@@ -30,8 +31,20 @@ class EmergencyErase(object):
         self.project_wd = os.path.dirname(os.path.abspath(sys.argv[0])) + '/'
         self.config = ConfigManager(self.project_wd, config_path)
 
+    def set_config_file(self, config_path):
+        if os.path.isfile(config_path) and '.txt' in config_path:
+            self.config = ConfigManager(self.project_wd, config_path)
+            return
+        raise ValueError('Not correct path to config file or not a config file')
+
+    def set_config_value(self, key, value):
+        self.config.set_cfg_value(key, value)
+
     def is_blank_config(self):
         return self.config.is_blank_cfg()
+
+    def get_config_info(self):
+        return self.config.get_info()
 
     def set_default_config(self):
         self.config.set_default()
@@ -51,6 +64,13 @@ class EmergencyErase(object):
         db = FilesDB(path_to_db, create_if_no=create_if_no)
         self.database = db
 
+    def check_file_path(path):
+        tmp = check_path(path)
+        return tmp
+
+    def check_file_path_and_priority(filewithprio):
+        return check_path_and_priority(filewithprio)
+
     @_check_db_path
     def delete_all_files(self):
         return self.database.delete_all_files()
@@ -61,7 +81,7 @@ class EmergencyErase(object):
 
     @_check_db_path
     def change_priority_of_file(self, changepriority):
-        #TODO Make it more user friendly (like rm -i and rm -f)
+        # TODO Make it more user friendly (like rm -i and rm -f)
         self.database.change_priority_of_file(changepriority)
 
     @_check_db_path
@@ -75,6 +95,10 @@ class EmergencyErase(object):
     @_check_db_path
     def get_all_data(self):
         return self.database.get_all_data()
+
+    @_check_db_path
+    def is_path_in_db(self, path):
+        return self.database.is_path_in_db(path)
 
     def set_keycombo(self, keycombo='<ctrl>+<alt>+e'):
         if keycombo is None:
@@ -91,7 +115,8 @@ class EmergencyErase(object):
         if daemonize is None:
             raise ValueError('Chose type of running script')
         if self.database.is_empty_base() or self.database.is_empty_table():
-            raise EEDataBaseError('You have no files in database table "files" or even table does not exists')
+            raise EEDataBaseError(
+                'You have no files in database table "files" or even table does not exists')
 
         if daemonize:
             with daemon.DaemonContext():
