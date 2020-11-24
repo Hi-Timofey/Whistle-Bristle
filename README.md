@@ -14,11 +14,10 @@ First of all you need [Python3](https://www.python.org/) on your system with thi
 All dependencies are in requirements.txt
 
 For installation you need to run this command in your terminal:
-> $ pip install -r requitements.txt
 
-> $ python3 wb_cli.py -h ( for CLI version )
-
-> $ python3 wb_qt.py ( for GUI version )
+    $ pip install -r requitements.txt
+    $ python3 wb_cli.py -h ( for CLI version )
+    $ python3 wb_qt.py ( for GUI version )
 
 ### Using in code
 
